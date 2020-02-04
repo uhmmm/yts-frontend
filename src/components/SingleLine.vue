@@ -3,12 +3,13 @@
     @mouseover="view.showScreen = true"
     @mouseleave="view.showScreen = false; mouseLeaver()">
 
-    <p 
-      ref="singleLine"
-      >
-      The candidates appeared in Liverpool for the hustings and had each 40 seconds to answer a pre-selected question
-    </p>
-    <div class="singleLine__thumbnail" v-bind:class="{ 'singeLine__thumbnail--inactive': !view.showScreen }" v-bind:style="{ marginLeft: this.posX + 'px' }"></div>
+    <p ref="singleLine">{{ line }}</p>
+
+    <div 
+      class="singleLine__thumbnail" 
+      v-bind:class="{ 'singeLine__thumbnail--inactive': !view.showScreen }" v-if="view.showScreen" 
+      v-bind:style="{ marginLeft: this.posX + 'px' }">
+    </div>
   </div>
 </template>
 
@@ -28,11 +29,12 @@ export default {
       secondPercentage: 0
     }
   },
+  props: [
+    'line'
+  ],
   mounted() {
     this.elWidth = this.$refs.singleLine.offsetWidth;
-
     this.$refs.singleLine.addEventListener("mousemove", this.mousePosition);
-
   },
   methods: {
     mouseLeaver() {
@@ -48,15 +50,11 @@ export default {
 
         this.$refs.singleLine.style.background = 'linear-gradient(90deg, rgba(255,255,255,1) ' + this.firstPercentage + '%,  rgba(0,0,0,1) ' + this.firstPercentage + '%, rgba(0,0,0,1) ' + this.secondPercentage + '%, rgba(255,255,255,1) ' + this.secondPercentage + '%, rgba(255,255,255,1) 100%)';
         this.$refs.singleLine.style.webkitBackgroundClip = 'text';
-      this.$refs.singleLine.style.webkitTextFillColor = 'transparent';
-
+        this.$refs.singleLine.style.webkitTextFillColor = 'transparent';
 
         this.firstPercentage = this.posX/this.elWidth*100;
         this.secondPercentage = secondPosX/this.elWidth*100;
       }
-      // console.log(this.posX/this.elWidth*100)
-
-      console.log(this.posX);
     }
   }
 }
@@ -75,16 +73,13 @@ div p {
   line-height: 90px;
   z-index: 10;
   cursor: pointer;
-  background: linear-gradient(90deg, rgba(255,255,255,1) 32%, rgba(0,0,0,1) 32%, rgba(0,0,0,1) 47%, rgba(255,255,255,1) 47%, rgba(255,255,255,1) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
 }
 
 .singleLine__thumbnail {
   width: 160px;
   height: 90px;
   background: white;
-  background-image: url('../assets/dummy/footage.jpg');
+  background-image: url('../assets/dummy/footage2.jpg');
   background-size: cover;
   position: absolute;
   top: 0;

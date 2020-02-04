@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <SingleLine msg="Welcome to Your Vue.js App"/>
+    <SingleLine line="The candidates appeared in Liverpool for the hustings and had each 40 seconds to answer a pre-selected question"/>
   </div>
 </template>
 
@@ -27,6 +27,6 @@ html {
 }
 
 #app {
-  margin-top: 8rem;
+  margin-top: 16rem;
 }
 </style>
