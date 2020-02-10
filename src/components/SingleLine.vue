@@ -1,20 +1,37 @@
 <template>
-  <div class="singleLine__container"
-    @mouseover="view.showScreen = true"
-    @mouseleave="view.showScreen = false; mouseLeaver()">
+  <div class="singleLine__container" ref="singleContainer">
 
-    <p ref="singleLine">{{ line }}</p>
+    <div class="sidebar">
+      <div class="sidebar__box"></div>
+      <Lines />
+    </div>
 
-    <div 
-      class="singleLine__thumbnail" 
-      v-bind:class="{ 'singeLine__thumbnail--inactive': !view.showScreen }" v-if="view.showScreen" 
+    <div class="content__container"
+        @mouseover="view.showScreen = true"
+        @mouseleave="view.showScreen = false; mouseLeaver()">
+
+      <span class="content__author" 
+        v-bind:class="{ 'content__author--active': network.active }"
+        @click="showNetwork(author)">{{ author }} / 3 sep 2018</span>
+      
+      <p ref="singleLine">{{ line }}</p>
+
+      <div class="singleLine_bg">
+      </div>
+
+    <div class="singleLine__thumbnail" 
+      v-bind:class="{ 'singeLine__thumbnail--inactive': !view.showScreen }" 
+      v-if="view.showScreen" 
       v-bind:style="{ marginLeft: this.posX + 'px' }">
+    </div>
+
     </div>
   </div>
 </template>
 
 <script>
 /* eslint-disable */
+import Lines from './SingleLine/Lines.vue';
 
 export default {
   name: 'SingleLine',
@@ -23,6 +40,9 @@ export default {
       view: {
         showScreen: false
       },
+      network: {
+        active: false
+      },
       elWidth: 0,
       posX: 0,
       firstPercentage: 0,
@@ -30,23 +50,28 @@ export default {
     }
   },
   props: [
-    'line'
+    'author', 'line'
   ],
+  components: {
+    Lines
+  },
   mounted() {
     this.elWidth = this.$refs.singleLine.offsetWidth;
     this.$refs.singleLine.addEventListener("mousemove", this.mousePosition);
   },
   methods: {
     mouseLeaver() {
-      this.$refs.singleLine.style.background = 'black';
       this.$refs.singleLine.style.webkitTextFillColor = 'white';
     },
     mousePosition(e) {
       e = e || window.event;
 
+      var xOffset = this.$refs.singleContainer.getBoundingClientRect().x;
+
       if (this.view.showScreen) {
-        this.posX = e.pageX - 80;
-        var secondPosX = e.pageX + 80;
+        this.posX = (e.pageX - xOffset)  - 61.5384615;
+        console.log(this.posX);
+        var secondPosX = (e.pageX - xOffset)  + 61.5384615;
 
         this.$refs.singleLine.style.background = 'linear-gradient(90deg, rgba(255,255,255,1) ' + this.firstPercentage + '%,  rgba(0,0,0,1) ' + this.firstPercentage + '%, rgba(0,0,0,1) ' + this.secondPercentage + '%, rgba(255,255,255,1) ' + this.secondPercentage + '%, rgba(255,255,255,1) 100%)';
         this.$refs.singleLine.style.webkitBackgroundClip = 'text';
@@ -55,34 +80,84 @@ export default {
         this.firstPercentage = this.posX/this.elWidth*100;
         this.secondPercentage = secondPosX/this.elWidth*100;
       }
+    },
+    showNetwork(author) {
+      this.network.active = true;
+      this.$emit('authorClicked', author)
     }
   }
 }
 </script>
 
-<style scoped>
+<style style="scss" scoped>
+@import '../styles/_global.scss';
+
+.sidebar__box {
+  height: 7rem;
+  width: 1rem;
+  background: rgba(199, 199, 199, 0.25);
+  position: absolute;
+  border-right: 1px solid #373737;
+}
+
 .singleLine__container {
   position: relative;
+  border-bottom: 1px solid #B8B8B8;
+  background: black;
+}
+
+.content__author {
+  margin-top: 1rem;
+  position: absolute;
+  color: #D8D8D8;
+  font-family: 'Flaco-mono';
+  font-size: .8rem;
+  cursor: pointer;
+  padding-right: .5rem;
+}
+
+.content__author--active {
+  background: blue;
+  margin-left: -4rem;
+  padding-left: 4rem;
 }
 
 div p {
-  font-family: 'Feijoa-Medium';
-  font-size: 2.5rem;
+  font-family: 'DIN-regular';
+  font-size: 2.25rem;
   white-space: nowrap;
   color: white;
-  line-height: 90px;
+  line-height: 7rem;
   z-index: 10;
   cursor: pointer;
+  margin: 0;
+}
+
+.content__container {
+  margin-left: 4rem;
+}
+
+.singleLine_bg {
+  position: absolute;
+  z-index: -2;
+  background: #131313;
+  width: 100vw;
+  height: 1.5rem;
+  top: 2.5rem;
+  margin-left: -4rem;
+  border-top: 1px solid #202020;
+  border-bottom: 1px solid #202020;
 }
 
 .singleLine__thumbnail {
-  width: 160px;
-  height: 90px;
+  width: 123.076923px;
+  height: 69.2307692px;
   background: white;
   background-image: url('../assets/dummy/footage2.jpg');
   background-size: cover;
   position: absolute;
   top: 0;
+  margin-top: 20px;
   z-index: -1;
 	-webkit-animation: slide-top 0.5s cubic-bezier(0.215, 0.610, 0.355, 1.000) both;
 	        animation: slide-top 0.5s cubic-bezier(0.215, 0.610, 0.355, 1.000) both;
