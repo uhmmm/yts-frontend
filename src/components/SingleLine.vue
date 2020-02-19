@@ -1,9 +1,11 @@
 <template>
-  <div class="singleLine__container" ref="singleContainer">
+  <div class="singleLine__container" 
+      ref="singleContainer"
+      v-bind:class="{ 'singleLine__container--active': context.show }" >
 
     <div class="sidebar">
       <div class="sidebar__box"></div>
-      <Lines />
+      <Lines @click.native="showContext(id)" />
     </div>
 
     <div class="content__container"
@@ -11,8 +13,11 @@
         @mouseleave="view.showScreen = false; mouseLeaver()">
 
       <span class="content__author" 
-        v-bind:class="{ 'content__author--active': network.active }"
-        @click="showNetwork(author)">{{ author }} / 3 sep 2018</span>
+        ref="containerAuthor"
+        v-bind:class="{ 'content__author--active': network.active }" 
+        @click="showNetwork(author)">
+          {{ author }} / 3 sep 2018
+      </span>
       
       <p ref="singleLine">{{ line }}</p>
 
@@ -32,6 +37,10 @@
 <script>
 /* eslint-disable */
 import Lines from './SingleLine/Lines.vue';
+import anime from 'animejs';
+import { uuid } from 'vue-uuid';
+
+import { mapState } from 'vuex'
 
 export default {
   name: 'SingleLine',
@@ -41,12 +50,21 @@ export default {
         showScreen: false
       },
       network: {
-        active: false
-      },
+        active: false 
+      }, 
+      context: { 
+        show: false 
+      }, 
+      elemUuid: uuid.v1(),
+      id: 43242342, // Uit db
       elWidth: 0,
       posX: 0,
       firstPercentage: 0,
-      secondPercentage: 0
+      secondPercentage: 0,
+      hoverAnimation: {
+        width: 0,
+        marginLeft: 0
+      }
     }
   },
   props: [
@@ -55,11 +73,37 @@ export default {
   components: {
     Lines
   },
+  computed: {
+    networkVisible() {
+      return this.$store.state.router.results.showNetwork
+    },
+    ...mapState(['layoutPositions.oneThird'])
+  },
+  created() { //https://dev.to/viniciuskneves/watch-for-vuex-state-changes-2mgj
+    this.$store.watch(
+      (state, getters) => getters.contextElem,
+      (newUuid, oldUuid) => {
+        if (newUuid === this.elemUuid) {
+          this.context.show = true;
+          this.contextAnim();
+        } else if (oldUuid === this.elemUuid) {
+          this.context.show = false;
+        }
+      },
+    );
+  },
   mounted() {
     this.elWidth = this.$refs.singleLine.offsetWidth;
     this.$refs.singleLine.addEventListener("mousemove", this.mousePosition);
+
+    this.hoverAnimation.width = this.$refs.containerAuthor.clientWidth;
+    this.hoverAnimation.marginLeft = this.$refs.containerAuthor.clientWidth;
+    // this.hoverAnimation.marginLeft = this.$refs.containerAuthor.getBoundingClientRect().width (4*16) + 8;
   },
   methods: {
+    updateWidth(el) {
+      this.hoverAnimation.width = el.toElement.offsetWidth;
+    },
     mouseLeaver() {
       this.$refs.singleLine.style.webkitTextFillColor = 'white';
     },
@@ -70,7 +114,6 @@ export default {
 
       if (this.view.showScreen) {
         this.posX = (e.pageX - xOffset)  - 61.5384615;
-        console.log(this.posX);
         var secondPosX = (e.pageX - xOffset)  + 61.5384615;
 
         this.$refs.singleLine.style.background = 'linear-gradient(90deg, rgba(255,255,255,1) ' + this.firstPercentage + '%,  rgba(0,0,0,1) ' + this.firstPercentage + '%, rgba(0,0,0,1) ' + this.secondPercentage + '%, rgba(255,255,255,1) ' + this.secondPercentage + '%, rgba(255,255,255,1) 100%)';
@@ -82,8 +125,36 @@ export default {
       }
     },
     showNetwork(author) {
+      var payload = {
+        unfold: true,
+        author: author,
+        elem: this.$refs.containerAuthor
+      }
+
+      this.$store.dispatch('openNetwork', payload);
       this.network.active = true;
-      this.$emit('authorClicked', author)
+      this.$emit('authorClicked') 
+    },
+    showContext(id) {
+      var payload = {
+        unfold: true,
+        elemUuid: this.elemUuid,
+        id: id,
+        elem: this.$refs.singleContainer
+      }
+
+      this.$store.dispatch('openContext', payload);
+    },
+    contextAnim() {
+
+      anime({
+        targets: this.$refs.singleContainer,
+        translateX: 0,
+        duration: 2000,
+        // easing: 'steps(2)',
+        ease: 'easeInQuad'
+      });
+
     }
   }
 }
@@ -106,6 +177,14 @@ export default {
   background: black;
 }
 
+.singleLine__container--active {
+  /* margin-left: -2rem; */
+}
+
+.singleLine--active {
+  margin-left: 2rem;
+}
+
 .content__author {
   margin-top: 1rem;
   position: absolute;
@@ -117,9 +196,13 @@ export default {
 }
 
 .content__author--active {
-  background: blue;
+  color: black;
+  background: #f6fd7d;
+  height: 15px;
   margin-left: -4rem;
   padding-left: 4rem;
+  padding-top: 3px;
+  padding-bottom: 5px;
 }
 
 div p {

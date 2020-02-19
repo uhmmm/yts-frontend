@@ -19,7 +19,7 @@
 
       <g class="lines">
         <path class="left st0" ref="secondSvg" style="transform: translateY(-48px);" d="M1.1,48V0H0v48H1.1z"/>
-        <path class="bottom st0" ref="thirdSvg" style="transform: translateX(-48px);" d="M48,46.9H0V48h48V46.9z"/>
+        <path class="bottom st0" ref="thirdSvg" v-show="showUnderline" style="transform: translateX(-48px);" d="M48,46.9H0V48h48V46.9z"/>
       </g>
 
       </svg>
@@ -35,14 +35,15 @@ export default {
   name: 'SvgLine',
   data: function() {
     return {
-      showText: false
+      showText: false,
+      showUnderline: false
     }
   },
   methods: {
     contextHover() {
-      console.log(this.$refs);
-
       this.showText = true;
+      this.showUnderline = true;
+
       anime({
         targets: this.$refs.firstSvg.childNodes,
         translateX: -16,
@@ -72,7 +73,6 @@ export default {
         opacity: 1,
         duration: 1000,
         delay: 600
-
       });
     },
     contextLeave() {
@@ -103,9 +103,7 @@ export default {
       });
 
       this.showText = false;
-      
-
-
+      this.showUnderline = false;
     }
   }
 }
@@ -123,7 +121,14 @@ export default {
 
 .sidebar__context:hover {
   cursor: pointer;
-  background: #333;
+  animation: 2s linear 2s infinite flicker;
+}
+
+@keyframes flicker {
+  33% { background: none; }
+  33%  { background: white; }
+  90%  { background: white; }
+  100%  { background: none; }
 }
 
 .sidebar__contextText {

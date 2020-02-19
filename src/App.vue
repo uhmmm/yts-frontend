@@ -1,13 +1,14 @@
 <template>
   <div id="app">
-    <Network v-if="showNetwork"/>
+    <Network v-if="networkStore.showNetwork"
+      :mainPosition="networkStore.activeNode" />
 
     <SingleLine 
       :author="testSentence(2, 2)"
       @authorClicked="unfoldNetwork"
       publishingData="13/03/2019"
       :line="englishSentence()"
-      ref="single"
+      :ref="'single_' + index"
       v-for="index in 100" :key="index"
     />
   </div>
@@ -28,14 +29,34 @@ export default {
   components: {
     SingleLine, Network
   },
+  computed: {
+    networkStore() {
+      console.log('network store')
+      return this.$store.state.router.results
+    }
+  },
+  watch: {
+    networkStore: function(val) {
+      console.log('NETWORK STORE TRIGGER')
+      this.simpleTest(val)
+    }
+  },
   data: function() {
     return {
-      showNetwork: false
+      results: {
+        totalItems: 100
+      },
+      network: {
+        show: false, // KAN WEG NAAR STORE
+        layoutSettings: {
+          width: 0,
+        },
+        mainNode: {}
+      }
     }
   },
   mounted() {
-    console.log('mounted')
-
+    this.setThird();
   },
   methods: {
     testSentence(mi, ma) {
@@ -44,43 +65,64 @@ export default {
     englishSentence() {
       return txtgen.sentence();
     },
-    unfoldNetwork(value) {
-      this.showNetwork = true;
-      var dw = window.innerWidth,
-          currentY = window.pageYOffset || document.documentElement.scrollTop,
+    setThird() {
+      this.network.layoutSettings.width = window.innerWidth / 3;
+      this.$store.dispatch('setThird', window.innerWidth / 3);
+    },
+    unfoldNetwork() {
+      // this.network.show = true;
+      this.network.mainNode = this.networkStore.activeNode;
+
+      var currentY = window.pageYOffset || document.documentElement.scrollTop,
           lineHeight = document.getElementsByClassName('singleLine__container')[0].offsetHeight,
-          startAtItem = Math.floor(currentY/lineHeight),
-          totalLength = startAtItem + 20;
+          startAtItem = Math.floor(currentY/lineHeight);
 
-      console.log(currentY);
-      console.log(currentY/lineHeight);
-      console.log(Math.floor(currentY/lineHeight));
+          console.log(startAtItem)
 
-      var i = 0;
+      this.bounceAnimation(startAtItem);
+
+      if (startAtItem === 0) { // trigger vanaf een
+        console.log('vanaf begin')
+        // trigger reeks na
+
+      } else {
+        this.setWidthOtherElem(startAtItem+20, this.results.totalItems, 0, startAtItem);
+      }
+    },
+    bounceAnimation(startAtItem) {
+      var startAtItem = startAtItem,
+          totalLength = startAtItem + 20,
+          i = 0;
+
 
       for (var startAtItem; startAtItem < totalLength; startAtItem++) {
-        console.log(startAtItem);
+        var _this = this;
         i++
         anime({
           targets: document.getElementsByClassName('singleLine__container')[startAtItem],
           translateX: function(i, n) {
-            return dw/3 + 'px'
+            return _this.network.layoutSettings.width + 'px'
           },
           duration: 2000,
           delay: i * 100,
           ease: 'easeInQuad'
         });
       }
-
-        // anime({
-        //   targets: '.singleLine__container',
-        //   translateX: function(i, n) {
-        //     return dw/3 + 'px'
-        //   },
-        //   duration: 2000,
-        //   delay: anime.stagger(100),
-        //   ease: 'easeInQuad'
-        // });
+    },
+    setWidthOtherElem(nAfter, nLast, nBegin, nBeginEnd) {
+      if (nBegin === 0) {
+        var i = nBegin;
+        for (i; i < nBeginEnd; i++) {
+          document.getElementsByClassName('singleLine__container')[i].style = "transform: translateX(" + this.network.layoutSettings.width + "px)"
+        }
+      } 
+      
+      if (nAfter) {
+        var i = nAfter;
+        for (i; i < nLast; i++) {
+          document.getElementsByClassName('singleLine__container')[i].style = "transform: translateX(" + this.network.layoutSettings.width + "px)"
+        }
+      }
     }
   }
 }
