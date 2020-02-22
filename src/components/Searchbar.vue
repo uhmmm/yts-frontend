@@ -6,6 +6,11 @@
       </div>
     </div>
 
+    <Close 
+      :delay=1500
+      v-if="window" />
+
+
     <div class="searchbar__content">
       <div class="searchbar__search">
         <input class="searchbar__form topnav" v-model="message" placeholder="Search">
@@ -19,19 +24,6 @@
         <span class="topnav" @click="animatePianoKeys()">Settings</span>
       </div>
 
-      <div class="searchbar__close" v-if="window">
-        <div class="searchbar__topfirstbox searchbar__box"></div>
-        <div class="searchbar__bottomsecondbox searchbar__box"></div>
-
-        <div class="searchbar__bottomfirstbox searchbar__box"></div>
-        <div class="searchbar__topsecondbox searchbar__box"></div>
-        <div class="searchbar__bottomfourthbox searchbar__box"></div>
-
-        <div class="searchbar__topthirdbox searchbar__box"></div>
-        <div class="searchbar__topfifthbox searchbar__box"></div>
-        <div class="searchbar__topfourthbox searchbar__box"></div>
-        <div class="searchbar__bottomfifthbox searchbar__box"></div>
-      </div>
     </div>
     
     <div 
@@ -93,6 +85,8 @@
 /* eslint-disable */
 import anime from 'animejs';
 
+import Close from './Searchbar/Close.vue';
+
 export default {
   name: 'searchbar',
   data: function() {
@@ -104,6 +98,9 @@ export default {
         }
       }
     }
+  },
+  components: {
+    Close
   },
   methods: {
     openWindow() {
@@ -129,7 +126,6 @@ export default {
         });
 
         this.animatePianoKeys(); 
-        this.animateClose(); 
         this.showBoxes(); 
       })   
     },
@@ -173,15 +169,6 @@ export default {
         duration: 3000,
         delay: function(el, i) { return i * 7; },
         ease: 'easeInOutQuad'
-      });
-    },
-    animateClose() {
-      anime({
-        targets: '.searchbar__box',
-        duration: 750,
-        delay: function(el, i) { return (i * 50) + 1500; },
-        opacity: 1,
-        easing: 'easeInOutQuart'
       });
     }
   }
@@ -251,10 +238,11 @@ export default {
   width: 12rem;
 }
 
-div span {
+.searchbar__community span {
   font-family: 'DIN-Regular';
   color: white;
   font-size: 1rem;
+  cursor: pointer;
 }
 
 .window {
@@ -353,6 +341,8 @@ ul li {
 }
 
 .window__search {
+  font-family: 'DIN-Regular';
+  color: white;
   font-size: 3rem;
 }
 
@@ -370,66 +360,5 @@ ul li {
   opacity: 0;
 }
 
-.searchbar__close {
-  width: 2.5rem;
-  height: 2.5rem;
-  position: absolute;
-  top: 2.75rem;
-  right: 4rem;
-}
-
-.searchbar__box {
-  width: .5rem;
-  height: .5rem;
-  background: white;
-  position: absolute;
-  opacity: 0;
-}
-
-// .searchbar__topfirstbox {
-//   width: .5rem;
-//   height: .5rem;
-//   background: white;
-// }
-
-.searchbar__topsecondbox {
-  margin-left: .5rem;
-  margin-top: .5rem;
-}
-
-.searchbar__topthirdbox {
-  margin-left: 1rem;
-  margin-top: 1rem;
-}
-
-.searchbar__topfourthbox {
-  margin-left: 1.5rem;
-  margin-top: .5rem;
-}
-
-.searchbar__topfifthbox {
-  margin-left: 2rem;
-  margin-top: 0rem;
-}
-
-.searchbar__bottomfirstbox {
-  margin-left: 0rem;
-  margin-top: 2rem;
-}
-
-.searchbar__bottomsecondbox {
-  margin-left: .5rem;
-  margin-top: 1.5rem;
-}
-
-.searchbar__bottomfourthbox {
-  margin-left: 1.5rem;
-  margin-top: 1.5rem;
-}
-
-.searchbar__bottomfifthbox {
-  margin-left: 2rem;
-  margin-top: 2rem;
-}
 
 </style>
