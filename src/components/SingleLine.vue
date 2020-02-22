@@ -20,8 +20,7 @@
       </span>
       
       <p ref="singleLine">{{ line }}</p>
-
-      <div class="singleLine_bg">
+        <div class="singleLine_bg">
       </div>
 
     <div class="singleLine__thumbnail" 
@@ -49,17 +48,17 @@ export default {
       view: {
         showScreen: false
       },
-      network: {
+      network: { // network en context mergen
         active: false 
       }, 
       context: { 
         show: false 
       }, 
       elemUuid: uuid.v1(),
-      id: 43242342, // Uit db
+      id: 43242342, // Uit db trekken
       elWidth: 0,
       posX: 0,
-      firstPercentage: 0,
+      firstPercentage: 0, // lokaal blijven
       secondPercentage: 0,
       hoverAnimation: {
         width: 0,
@@ -91,6 +90,17 @@ export default {
         }
       },
     );
+
+    this.$store.watch(
+      (state, getters) => getters.resultsElem,
+      (newUuid, oldUuid) => {
+        if (newUuid === this.elemUuid) {
+          this.network.active = true;
+        } else if (oldUuid === this.elemUuid) {
+          this.network.active = false;
+        }
+      },
+    );
   },
   mounted() {
     this.elWidth = this.$refs.singleLine.offsetWidth;
@@ -113,8 +123,8 @@ export default {
       var xOffset = this.$refs.singleContainer.getBoundingClientRect().x;
 
       if (this.view.showScreen) {
-        this.posX = (e.pageX - xOffset)  - 61.5384615;
-        var secondPosX = (e.pageX - xOffset)  + 61.5384615;
+        this.posX = (e.pageX - xOffset) - (61.5384615);
+        var secondPosX = (e.pageX - xOffset) + (61.5384615);
 
         this.$refs.singleLine.style.background = 'linear-gradient(90deg, rgba(255,255,255,1) ' + this.firstPercentage + '%,  rgba(0,0,0,1) ' + this.firstPercentage + '%, rgba(0,0,0,1) ' + this.secondPercentage + '%, rgba(255,255,255,1) ' + this.secondPercentage + '%, rgba(255,255,255,1) 100%)';
         this.$refs.singleLine.style.webkitBackgroundClip = 'text';
@@ -128,11 +138,12 @@ export default {
       var payload = {
         unfold: true,
         author: author,
+        elemUuid: this.elemUuid,
         elem: this.$refs.containerAuthor
       }
 
       this.$store.dispatch('openNetwork', payload);
-      this.network.active = true;
+      // this.network.active = true; // ONDERZOEKEN OF DIT WEG KAN
       this.$emit('authorClicked') 
     },
     showContext(id) {
@@ -151,7 +162,6 @@ export default {
         targets: this.$refs.singleContainer,
         translateX: 0,
         duration: 2000,
-        // easing: 'steps(2)',
         ease: 'easeInQuad'
       });
 
@@ -160,9 +170,7 @@ export default {
 }
 </script>
 
-<style style="scss" scoped>
-@import '../styles/_global.scss';
-
+<style lang="scss" scoped>
 .sidebar__box {
   height: 7rem;
   width: 1rem;
@@ -174,7 +182,7 @@ export default {
 .singleLine__container {
   position: relative;
   border-bottom: 1px solid #B8B8B8;
-  background: black;
+  background: $background_color;
 }
 
 .singleLine__container--active {
@@ -196,7 +204,7 @@ export default {
 }
 
 .content__author--active {
-  color: black;
+  color: $background_color;
   background: #f6fd7d;
   height: 15px;
   margin-left: -4rem;
@@ -223,13 +231,13 @@ div p {
 .singleLine_bg {
   position: absolute;
   z-index: -2;
-  background: #131313;
+  background: $background-text;
   width: 100vw;
   height: 1.5rem;
   top: 2.5rem;
   margin-left: -4rem;
-  border-top: 1px solid #202020;
-  border-bottom: 1px solid #202020;
+  border-top: 1px solid $highlight_background_text;
+  border-bottom: 1px solid $highlight_background_text;
 }
 
 .singleLine__thumbnail {

@@ -24,11 +24,13 @@ export default new Vuex.Store({
     }
   },
   getters: {
+    resultsElem: state => state.router.results.elemUuid,
+    activeNodeResults: state => state.router.results.activeNode,
     contextElem: state => state.router.context.elemUuid,
   },
   mutations: {
     openNetwork(state, bool) { state.router.results.showNetwork = bool; },
-    openContext(state, bool) { state.router.results.showContext = bool; },
+    openContext(state, bool) { state.router.context.showContext = bool; },
     setActiveNodeResults(state, node) { state.router.results.activeNode = node; }, // KAN MAYBE WEG?
     setActiveNodeContext(state, node) { state.router.context.activeNode = node; }, // MAYBE WEG?
     setElemUuidResults(state, elemUuid) { state.router.results.elemUuid = elemUuid; },
@@ -39,6 +41,7 @@ export default new Vuex.Store({
     openNetwork(context, payload) {
       console.log(payload)
       context.commit('openNetwork', payload.unfold);
+      context.commit('setElemUuidResults', payload.elemUuid);
       context.commit('setActiveNodeResults', payload.elem);
     },
     openContext(context, payload) {

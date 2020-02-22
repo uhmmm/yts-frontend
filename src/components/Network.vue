@@ -18,12 +18,26 @@ export default {
   name: 'Network',
   data: function() {
     return {
-      networkVis: {}
+      networkVis: {},
+      svgSettings: {
+        width: 0,
+        height: 0
+      },
+      svgElement: {},
+      mainLine: {}
     }
   },
   props: [
     'mainPosition'
   ],
+  created() {
+    this.$store.watch(
+      (state, getters) => getters.activeNodeResults,
+      (newLine, oldLine) => {
+        this.redrawMainline(newLine, oldLine)
+      },
+    );
+  },
   mounted() {
     console.log(this.mainPosition);
     console.log(document.getElementsByClassName('content__author'));
@@ -99,41 +113,70 @@ export default {
     setTimeout(() => this.drawSvg(), 250); 
   },
   methods: {
+    setupSvg() {
+      this.svgSettings.width = this.$refs.networkCanvas.offsetWidth;
+      this.svgSettings.height = this.$refs.networkCanvas.offsetHeight;
+    },
     drawSvg() {
+      this.setupSvg();
       console.log(this.mainPosition.getBoundingClientRect().y);
       console.log(this.networkVis.getPositions('4121421'));
 
       var positions = this.networkVis.canvasToDOM(this.networkVis.getPositions('x4121421').x4121421);
 
-      var containerWidth = this.$refs.networkCanvas.offsetWidth;
-      var containerHeight = this.$refs.networkCanvas.offsetHeight;
+      var containerWidth = this.svgSettings.width;
+      var containerHeight = this.svgSettings.height;
       var labelPos = this.mainPosition.getBoundingClientRect().y + 5;
 
-    const svg = SVG(containerWidth, containerHeight, '.svgContainer');
-    var mainLine = svg.bezier(containerWidth, labelPos, containerWidth - 30, labelPos + 30, positions.x + 20, positions.y, positions.x, positions.y)
-      .fill("none")
-      .stroke("black")
-      .strokeWidth(1)
-      .strokeDasharray("5 3")
+      this.svgElement = SVG(containerWidth, containerHeight, '.svgContainer');
 
-    this.$refs.svgContainer.appendChild(svg)
+      console.log(this.svgElement)
+      this.mainLine = this.svgElement.bezier(containerWidth, labelPos, containerWidth - 30, labelPos + 30, positions.x + 20, positions.y, positions.x, positions.y)
+        .fill("none")
+        .stroke("black")
+        .strokeWidth(1)
+        .strokeDasharray("5 3")
 
-    let didScroll = false;
-    window.onscroll = () => didScroll = true;
+      this.$refs.svgContainer.appendChild(this.svgElement)
 
-    setInterval(() => {
-      if ( didScroll ) {
-        didScroll = false;
-        labelPos = this.mainPosition.getBoundingClientRect().y + 5;
+      let didScroll = false;
+      window.onscroll = () => didScroll = true;
+
+      setInterval(() => {
+        if ( didScroll ) {
+          didScroll = false;
+          labelPos = this.mainPosition.getBoundingClientRect().y + 5;
 
         // path().moveTo(3,4).curveTo(1,2,3,4,5,6).lineTo(100,200)
         // svg.removeChildren();
 
-        mainLine.setBezier(containerWidth, labelPos, containerWidth - 100, labelPos -100, positions.x + 100, positions.y + 100, positions.x, positions.y)
-        .opacity(this.opacity(labelPos))
-  
-      }
-    }, 100); 
+          this.mainLine.setBezier(containerWidth, labelPos, containerWidth - 100, labelPos -100, positions.x + 100, positions.y + 100, positions.x, positions.y)
+          .opacity(this.opacity(labelPos))
+        }
+      }, 100); 
+    },
+    redrawMainline(newElem, oldElem) {
+      var positions = this.networkVis.canvasToDOM(this.networkVis.getPositions('x4121421').x4121421);
+      var labelPos = newElem.getBoundingClientRect().y + 5;
+      var labelPosOld = oldElem.getBoundingClientRect().y + 5;
+
+
+      var animationPositions = {
+        y: labelPosOld
+      };
+
+      var _this = this;
+
+      anime({
+        targets: animationPositions,
+        y: labelPos,
+        round: 1,
+        duration: 500,
+        easing: 'easeInOutExpo',
+        update: function() {
+          _this.mainLine.setBezier(_this.svgSettings.width, animationPositions.y, _this.svgSettings.width - 100, animationPositions.y -100, positions.x + 100, positions.y + 100, positions.x, positions.y).opacity(1);
+        }
+      });
     },
     opacity(val) {
       var currentVal = 0;

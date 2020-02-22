@@ -1,7 +1,15 @@
 <template>
   <div id="app">
-    <Network v-if="networkStore.showNetwork"
+    <Searchbar />
+    <Context 
+      v-if="contextVisible"
+    />
+
+    <Network 
+      v-if="networkStore.showNetwork"
       :mainPosition="networkStore.activeNode" />
+
+    <div class="singlelines">
 
     <SingleLine 
       :author="testSentence(2, 2)"
@@ -9,37 +17,36 @@
       publishingData="13/03/2019"
       :line="englishSentence()"
       :ref="'single_' + index"
-      v-for="index in 100" :key="index"
-    />
+      v-for="index in 100" :key="index" />
+
+      </div>
+
   </div>
 </template>
 
 <script>
 /* eslint-disable */
 
-import anime from 'animejs';
+// Just for testing
 import randomSentence from 'random-sentence';
 const txtgen = require('txtgen');
 
+import anime from 'animejs';
+
+// COMPONENTS
 import SingleLine from './components/SingleLine.vue'
 import Network from './components/Network.vue'
+import Context from './components/Context.vue'
+import Searchbar from './components/Searchbar.vue'
 
 export default {
   name: 'app',
   components: {
-    SingleLine, Network
+    Searchbar, SingleLine, Network, Context
   },
   computed: {
-    networkStore() {
-      console.log('network store')
-      return this.$store.state.router.results
-    }
-  },
-  watch: {
-    networkStore: function(val) {
-      console.log('NETWORK STORE TRIGGER')
-      this.simpleTest(val)
-    }
+    networkStore() { return this.$store.state.router.results },
+    contextVisible() { return this.$store.state.router.context.showContext }
   },
   data: function() {
     return {
@@ -70,7 +77,6 @@ export default {
       this.$store.dispatch('setThird', window.innerWidth / 3);
     },
     unfoldNetwork() {
-      // this.network.show = true;
       this.network.mainNode = this.networkStore.activeNode;
 
       var currentY = window.pageYOffset || document.documentElement.scrollTop,
@@ -128,7 +134,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" global>
 @import 'styles/global';
 @import 'styles/reset';
 
@@ -162,6 +168,7 @@ html {
   overflow-x: hidden;
 }
 
-#app {
+.singlelines {
+  margin-top: 4rem;
 }
 </style>
