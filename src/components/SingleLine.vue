@@ -147,9 +147,12 @@ export default {
       this.$emit('authorClicked') 
     },
     showContext(id) {
+      var elemPositions = this.$refs.singleLine.getBoundingClientRect();
+
       var payload = {
         unfold: true,
         elemUuid: this.elemUuid,
+        elemPositions: elemPositions,
         id: id,
         elem: this.$refs.singleContainer
       }
@@ -157,7 +160,6 @@ export default {
       this.$store.dispatch('openContext', payload);
     },
     contextAnim() {
-
       anime({
         targets: this.$refs.singleContainer,
         translateX: 0,

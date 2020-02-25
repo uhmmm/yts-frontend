@@ -1,0 +1,21 @@
+{
+  "search": {
+    "communities": [
+      {
+        "id": 0,
+        "name": "altright",
+        "prettyName": "Alt-right"
+      },
+      {
+        "id": 1,
+        "name": "antivax",
+        "prettyName": "Anti-vaxxers"
+      },
+      {
+        "id": 2,
+        "name": "flatearth",
+        "prettyName": "Flat Earthers"
+      }
+    ]
+  }
+}

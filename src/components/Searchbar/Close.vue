@@ -1,5 +1,5 @@
 <template>
-  <div class="searchbar__close">
+  <div class="searchbar__close" @click="closeWindow()">
     <div class="searchbar__topfirstbox searchbar__box"></div>
     <div class="searchbar__bottomsecondbox searchbar__box"></div>
 
@@ -35,6 +35,11 @@ export default {
       opacity: 1,
       easing: 'easeInOutQuart'
     });
+  },
+  methods: {
+    closeWindow() {
+      this.$emit('closeWindow')
+    }
   }
 }
 </script>
@@ -47,6 +52,7 @@ export default {
   position: absolute;
   top: 2.75rem;
   right: 4rem;
+  cursor: pointer;
 }
 
 .searchbar__box {

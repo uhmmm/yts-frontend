@@ -1,9 +1,11 @@
 <template>
   <div id="app">
-    <Searchbar />
+    <Searchbar ref="searchbar" />
     <Context 
       v-if="contextVisible"
     />
+
+    <Timebar />
 
     <Network 
       v-if="networkStore.showNetwork"
@@ -12,14 +14,17 @@
     <div class="singlelines">
 
     <SingleLine 
-      :author="testSentence(2, 2)"
+      author="PragerU"
       @authorClicked="unfoldNetwork"
       publishingData="13/03/2019"
-      :line="englishSentence()"
+      :line="line.text"
       :ref="'single_' + index"
-      v-for="index in 100" :key="index" />
+      v-for="line in results.lines" :key="line.start"
+      />
 
-      </div>
+            <!-- v-for="index in 100" :key="index"  -->
+
+    </div>
 
   </div>
 </template>
@@ -30,6 +35,7 @@
 // Just for testing
 import randomSentence from 'random-sentence';
 const txtgen = require('txtgen');
+import lines from './components/dummy/test.json'
 
 import anime from 'animejs';
 
@@ -38,11 +44,13 @@ import SingleLine from './components/SingleLine.vue'
 import Network from './components/Network.vue'
 import Context from './components/Context.vue'
 import Searchbar from './components/Searchbar.vue'
+import Timebar from './components/Timebar.vue'
+
 
 export default {
   name: 'app',
   components: {
-    Searchbar, SingleLine, Network, Context
+    Searchbar, SingleLine, Network, Context, Timebar
   },
   computed: {
     networkStore() { return this.$store.state.router.results },
@@ -51,7 +59,8 @@ export default {
   data: function() {
     return {
       results: {
-        totalItems: 100
+        totalItems: 100,
+        lines: lines
       },
       network: {
         show: false, // KAN WEG NAAR STORE
@@ -63,6 +72,7 @@ export default {
     }
   },
   mounted() {
+    console.log(lines);
     this.setThird();
   },
   methods: {
@@ -85,6 +95,7 @@ export default {
 
           console.log(startAtItem)
 
+      this.moveSearchbar();
       this.bounceAnimation(startAtItem);
 
       if (startAtItem === 0) { // trigger vanaf een
@@ -94,6 +105,20 @@ export default {
       } else {
         this.setWidthOtherElem(startAtItem+20, this.results.totalItems, 0, startAtItem);
       }
+    },
+    moveSearchbar() {
+      var _this = this;
+      console.log(_this.$refs.searchbar);
+
+      anime({
+        targets: _this.$refs.searchbar.$el,
+        translateX: function(i, n) {
+          return _this.network.layoutSettings.width - 16 + 'px'
+        },
+        duration: 1000,
+        delay: 0,
+        easing: 'easeInOutQuart'
+      });
     },
     bounceAnimation(startAtItem) {
       var startAtItem = startAtItem,
@@ -164,7 +189,7 @@ export default {
 
 html {
   font-size: $base_size;
-  background: white;
+  background: #f3f3f3;
   overflow-x: hidden;
 }
 

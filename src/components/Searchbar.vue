@@ -8,12 +8,17 @@
 
     <Close 
       :delay=1500
+      @closeWindow="closeWindow"
       v-if="window" />
-
 
     <div class="searchbar__content">
       <div class="searchbar__search">
-        <input class="searchbar__form topnav" v-model="message" placeholder="Search">
+        <input 
+          class="searchbar__form topnav" 
+          onClick="this.setSelectionRange(0, this.value.length)"
+          v-model="searchQuery.query"
+          v-on:keyup.enter="performSearch" 
+          placeholder="Search">
       </div>
 
       <div class="searchbar__community">
@@ -33,14 +38,14 @@
       <div class="window__content">
         <div class="window__contentSearch window__column">
           <h2 class="window__title">Search</h2>
-          <span class="window__search window__column">Pizza</span>
+          <span class="window__search window__column">{{searchQuery.query}}</span>
         </div>
         <div class="window__contentCommunities">
           <h2 class="window__title">Communities (1)</h2>
           
           <div class="window__column">
             <ul>
-              <li class="bullet">Alt-right</li>
+              <li class="bullet" v-for="item in initialSearchSettings.search.communities" :dataname="item.name" :key="item.name">{{ item.prettyName }}</li>
               <li class="bullet--inactive">Anti vaccination</li>
               <li class="bullet--inactive">Flat earthers</li>
             </ul>
@@ -60,9 +65,9 @@
 
             <h3>Visualization type</h3>
             <ul>
-              <li class="bullet">Search entries</li>
-              <li class="bullet--inactive">Search and network</li>
-              <li class="bullet--inactive">Community</li>
+              <li class="bullet--inactive" v-bind:class="{ 'bullet': view == 'list' }" @click="fillSort('visType', 'list')">List</li>
+              <li class="bullet--inactive" v-bind:class="{ 'bullet': view == 'listnetwork' }" @click="fillSort('visType', 'listnetwork')">List and network</li>
+              <li class="bullet--inactive" v-bind:class="{ 'bullet': view == 'discourse' }" @click="fillSort('visType', 'discourse')">Discourse</li>
             </ul>
           </div>
         </div>         
@@ -83,26 +88,45 @@
 
 <script>
 /* eslint-disable */
+import { mapState } from 'vuex'
+
 import anime from 'animejs';
 
 import Close from './Searchbar/Close.vue';
+
+import searchSettings from '../store/initialData.json';
 
 export default {
   name: 'searchbar',
   data: function() {
     return {
       window: false,
-      search: {
-        communities: {
-          array: ['altright']
-        }
+      initialSearchSettings: searchSettings,
+      searchQuery: {
+        query: "Purpose",
+        communities: ['altright']
       }
     }
   },
   components: {
     Close
   },
+  computed: {
+    view () {
+      console.log(this.$store.state.router.view);
+      // console.log(this.$store.state.router.view == 'list')
+      return this.$store.state.router.view
+
+    }
+    // ...mapState(['router.view']),
+  },
   methods: {
+    performSearch() {
+      this.$store.dispatch('performSearch', this.searchQuery.query)
+    },
+    fillSort(field, value) {
+      this.$store.dispatch('fillSort', {field: field, value: value})
+    },
     openWindow() {
       this.window = !this.window;
 
@@ -120,7 +144,7 @@ export default {
 
         anime({
           targets: '.window__bar',
-          height: function() { return 400 + anime.random(0, 100); },
+          height: function() { return 500 + anime.random(0, 100); },
           duration: 2000,
           delay: function(el, i) { return i * 7; },
         });
@@ -128,6 +152,9 @@ export default {
         this.animatePianoKeys(); 
         this.showBoxes(); 
       })   
+    },
+    closeWindow() {
+      this.window = !this.window;
     },
     showBoxes() {
       anime({
@@ -310,10 +337,14 @@ ul li {
   margin-bottom: .5rem;
 }
 
+.bullet {
+  color: white !important;
+}
+
 .bullet::before {
   display: block;
   content: ' ';
-  background-image: url('../assets/icons/circle_active.svg');
+  background-image: url('../assets/icons/circle_active.svg') !important;
   background-size: .7rem .7rem;
   background-position: left center;
   background-repeat: no-repeat;
