@@ -113,10 +113,7 @@ export default {
   },
   computed: {
     view () {
-      console.log(this.$store.state.router.view);
-      // console.log(this.$store.state.router.view == 'list')
       return this.$store.state.router.view
-
     }
     // ...mapState(['router.view']),
   },
@@ -125,6 +122,7 @@ export default {
       this.$store.dispatch('performSearch', this.searchQuery.query)
     },
     fillSort(field, value) {
+      // this.$emit('change-view')
       this.$store.dispatch('fillSort', {field: field, value: value})
     },
     openWindow() {
@@ -339,6 +337,7 @@ ul li {
 
 .bullet {
   color: white !important;
+  cursor: pointer;
 }
 
 .bullet::before {
@@ -356,6 +355,7 @@ ul li {
 
 .bullet--inactive {
   color: #999999;
+  cursor: pointer;
 }
 
 .bullet--inactive::before {
@@ -375,6 +375,7 @@ ul li {
   font-family: 'DIN-Regular';
   color: white;
   font-size: 3rem;
+  overflow-wrap: break-word;
 }
 
 // Stuff for animation

@@ -7,7 +7,7 @@ export default new Vuex.Store({
 /* eslint-disable */
   state: {
     router: {
-      view: "list", //list, listnetwork, discourse
+      view: "discourse", //list, listnetwork, discourse
       results: {
         showNetwork: false,
         elemUuid: '',
@@ -31,6 +31,7 @@ export default new Vuex.Store({
     resultsElem: state => state.router.results.elemUuid,
     activeNodeResults: state => state.router.results.activeNode,
     contextElem: state => state.router.context.elemUuid,
+    viewChanged: state => state.router.view
   },
   mutations: {
     openNetwork(state, bool) { state.router.results.showNetwork = bool; },
