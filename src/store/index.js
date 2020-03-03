@@ -7,9 +7,8 @@ export default new Vuex.Store({
 /* eslint-disable */
   state: {
     router: {
-      view: "discourse", //list, listnetwork, discourse
+      view: "list", //list, listnetwork, discourse
       results: {
-        showNetwork: false,
         elemUuid: '',
         activeNode: {}
       },
@@ -34,7 +33,6 @@ export default new Vuex.Store({
     viewChanged: state => state.router.view
   },
   mutations: {
-    openNetwork(state, bool) { state.router.results.showNetwork = bool; },
     openContext(state, bool) { state.router.context.showContext = bool; },
     setActiveNodeResults(state, node) { state.router.results.activeNode = node; }, // KAN MAYBE WEG?
     setActiveNodeContext(state, node) { state.router.context.activeNode = node; }, // MAYBE WEG?
@@ -46,19 +44,20 @@ export default new Vuex.Store({
       state.search.string = str;
       console.log('zoek naar ', str) 
     },
+    setListNetwork(state) {
+      state.router.view = "listnetwork"
+    },
     fillSort(state, obj) {
       if (obj.field === "visType") {
         state.router.view = obj.value
-        console.log(state);
       }
     }
   },
   actions: {
     openNetwork(context, payload) {
-      console.log(payload)
-      context.commit('openNetwork', payload.unfold);
       context.commit('setElemUuidResults', payload.elemUuid);
       context.commit('setActiveNodeResults', payload.elem);
+      context.commit('setListNetwork'); // Kan dit naar fillSort aangepast worden?
     },
     openContext(context, payload) {
       console.log(payload);

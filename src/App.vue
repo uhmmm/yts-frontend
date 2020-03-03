@@ -7,7 +7,7 @@
 
     <Network 
       v-if="view === 'listnetwork'"
-      :mainPosition="networkStore.activeNode" />
+      :mainPosition="network.mainNode" />
 
     <Discourse
       v-if="view === 'discourse'" />
@@ -17,13 +17,14 @@
       v-if="view === 'list' || view === 'listnetwork'">
 
       <SingleLine 
-        author="PragerU"
-        @authorClicked="unfoldNetwork"
+        author="Channel name"
+        @authorClicked="unfoldNetworkNode"
         publishingData="13/02/2020"
         :line="line.text"
-        :ref="'single_' + index"
         v-for="line in results.lines" :key="line.start"
+        :ref="'single_' + index"
         />
+
     </div>
 
   </div>
@@ -65,7 +66,6 @@ export default {
         lines: lines
       },
       network: {
-        show: false, // KAN WEG NAAR STORE
         layoutSettings: {
           width: 0,
         },
@@ -112,8 +112,13 @@ export default {
       this.network.layoutSettings.width = window.innerWidth / 3;
       this.$store.dispatch('setThird', window.innerWidth / 3);
     },
+    unfoldNetworkNode(node) {
+      console.log('hela');
+      console.log(node);
+      this.network.mainNode = node;
+    },
     unfoldNetwork(way) {
-      this.network.mainNode = this.networkStore.activeNode;
+      // this.network.mainNode = this.networkStore.activeNode;
 
       var currentY = window.pageYOffset || document.documentElement.scrollTop,
           lineHeight = document.getElementsByClassName('singleLine__container')[0].offsetHeight,

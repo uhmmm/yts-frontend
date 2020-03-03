@@ -34,6 +34,8 @@ export default {
     this.$store.watch(
       (state, getters) => getters.activeNodeResults,
       (newLine, oldLine) => {
+        console.log('nieuwe lijn');
+        console.log(newLine);
         this.redrawMainline(newLine, oldLine)
       },
     );
@@ -44,37 +46,37 @@ export default {
 
     // create an array with nodes
     var nodes = new vis.DataSet([
-        {id: 'x4121421',  shape: 'circularImage', image: 'https://randomuser.me/api/portraits/men/35.jpg', size: 48},
-        {id: 2,  shape: 'circularImage', image: 'https://randomuser.me/api/portraits/men/2.jpg'},
-        {id: 3,  shape: 'circularImage', image: 'https://randomuser.me/api/portraits/men/3.jpg'},
-        {id: 4,  shape: 'circularImage', image: 'https://randomuser.me/api/portraits/men/5.jpg'},
-        {id: 5,  shape: 'circularImage', image: 'https://randomuser.me/api/portraits/men/7.jpg'},
-        {id: 6, borderWidth: 0 },
-        {id: 7, borderWidth: 0 },
-        {id: 8,  borderWidth: 0 },
-        {id: 9,  borderWidth: 0 },
-        {id: 10, borderWidth: 0 },
-        {id: 11, borderWidth: 0 },
-        {id: 12, borderWidth: 0 },
+      {id: 'x4121421',  shape: 'circularImage', image: 'https://randomuser.me/api/portraits/men/35.jpg', size: 48},
+      {id: 2,  shape: 'circularImage', image: 'https://randomuser.me/api/portraits/men/2.jpg'},
+      {id: 3,  shape: 'circularImage', image: 'https://randomuser.me/api/portraits/men/3.jpg'},
+      {id: 4,  shape: 'circularImage', image: 'https://randomuser.me/api/portraits/men/5.jpg'},
+      {id: 5,  shape: 'circularImage', image: 'https://randomuser.me/api/portraits/men/7.jpg'},
+      {id: 6, borderWidth: 0 },
+      {id: 7, borderWidth: 0 },
+      {id: 8,  borderWidth: 0 },
+      {id: 9,  borderWidth: 0 },
+      {id: 10, borderWidth: 0 },
+      {id: 11, borderWidth: 0 },
+      {id: 12, borderWidth: 0 },
     ]);
 
     // create an array with edges
     var edges = new vis.DataSet([
-        {from: 'x4121421', to: 3, width: 5},
-        {from: 'x4121421', to: 2},
-        {from: 2, to: 4},
-        {from: 2, to: 5},
-        {from: 3, to: 10},
-        {from: 4, to: 11},
-        {from: 5, to: 4},
-        {from: 2, to: 11},
-        {from: 11, to: 12},
-        {from: 3, to: 2},
-        {from: 10, to: 11},
-        {from: 8, to: 5},
-        {from: 6, to: 8},
-        {from: 7, to: 3},
-        {from: 9, to: 3}
+      {from: 'x4121421', to: 3, width: 5},
+      {from: 'x4121421', to: 2},
+      {from: 2, to: 4},
+      {from: 2, to: 5},
+      {from: 3, to: 10},
+      {from: 4, to: 11},
+      {from: 5, to: 4},
+      {from: 2, to: 11},
+      {from: 11, to: 12},
+      {from: 3, to: 2},
+      {from: 10, to: 11},
+      {from: 8, to: 5},
+      {from: 6, to: 8},
+      {from: 7, to: 3},
+      {from: 9, to: 3}
     ]);
 
     // create a network
@@ -97,7 +99,7 @@ export default {
             border: '#FF9B9B'
           }
         },
-        font:{color:'#eeeeee'}
+        font:{ color:'#eeeeee'}
       },
       interaction: {
         hover: true,
@@ -119,6 +121,8 @@ export default {
     },
     drawSvg() {
       this.setupSvg();
+      console.log('draw svg');
+      console.log(this.mainPosition);
       console.log(this.mainPosition.getBoundingClientRect().y);
       console.log(this.networkVis.getPositions('4121421'));
 
@@ -166,6 +170,11 @@ export default {
       };
 
       var _this = this;
+
+      console.log('zichtbaar?')
+      console.log("positions ", positions);
+      console.log("labelpos ", labelPos);
+      console.log("labelposold ", labelPosOld);
 
       anime({
         targets: animationPositions,

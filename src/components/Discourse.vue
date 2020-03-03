@@ -5,12 +5,25 @@
 
     <div class="discourse__container">
       <div class="discourse__period" ref="container">
-        <h2 ref="date">17.01.19</h2>
-        <canvas id="firstPeriod" ref="firstPeriod"></canvas>
+        <h2>17.01.19</h2>
+        <canvas id="firstPeriod" ref="containerOne"></canvas>
       </div>
-      <div class="discourse__period"></div>
-      <div class="discourse__period"></div>
-      <div class="discourse__period"></div>
+
+      <div class="discourse__period">
+        <h2>18.01.19</h2>
+        <canvas ref="containerTwo"></canvas>
+      </div>
+
+      <div class="discourse__period">
+        <h2>20.01.19</h2>
+        <canvas ref="containerThree"></canvas>        
+      </div>
+      
+      <div class="discourse__period">
+                <h2>21.01.19</h2>
+        <canvas ref="containerFour"></canvas> 
+      </div>
+
     </div>
   </div>
 </template>
@@ -27,7 +40,29 @@ export default {
   mounted() {
     this.animateDate();
 
-    Matter.use(
+    
+    this.createVis('containerOne');
+    this.createVis('containerTwo');
+    this.createVis('containerThree');
+    this.createVis('containerFour');
+  },
+  methods: {
+    animateDate() {
+      anime({
+        targets: 'h2',
+        opacity: 1,
+        duration: 1000,
+        delay: function(n,i) {
+          return (i*100) + 500
+        },
+        easing: 'easeInQuad'
+      });
+    },
+    createVis(elem) {
+
+
+console.log(this.$refs[elem])
+      Matter.use(
       'matter-attractors' // PLUGIN_NAME
     );
 
@@ -49,7 +84,7 @@ export default {
 
       // create renderer
       var render = Render.create({
-        canvas: this.$refs.firstPeriod,
+        canvas: this.$refs[elem],
         engine: engine,
         options: {
           width: this.$refs.container.offsetWidth,
@@ -96,7 +131,7 @@ export default {
 
       // #fcde9c,#faa476,#f0746e,#e34f6f,#dc3977,#b9257a,#7c1d6f
 
-      for (var i = 0; i < 20; i += 1) {
+      for (var i = 0; i < Common.random(1, 20); i += 1) {
         var body = Bodies.polygon(
           Common.random(0, render.options.width), 
           Common.random(0, render.options.height),
@@ -113,7 +148,7 @@ export default {
         World.add(world, body);
       }
 
-      for (var i = 0; i < 20; i += 1) {
+      for (var i = 0; i < Common.random(1, 20); i += 1) {
         var body = Bodies.polygon(
           Common.random(0, render.options.width), 
           Common.random(0, render.options.height),
@@ -149,7 +184,7 @@ export default {
     }
     
     var mouseConstraint = Matter.MouseConstraint.create(engine, { //Create Constraint
-      element: this.$refs.firstPeriod,
+      element: this.$refs[elem],
       constraint: {
       render: {
         visible: false
@@ -186,16 +221,6 @@ export default {
         }
       };
 
-  },
-  methods: {
-    animateDate() {
-      anime({
-        targets: this.$refs.date,
-        opacity: 1,
-        duration: 1000,
-        delay: 500,
-        easing: 'easeInQuad'
-      });
     }
   }
 }
@@ -204,9 +229,10 @@ export default {
 <style lang="scss" scoped>
 .discourse {
   width: 100vw;
-  height: 100vh;
+  height: calc(100vh - 3rem);
   background:rgba(199, 199, 199, 0.25);
   margin-top: 4rem;
+  position: fixed;
 }
 
 .sidebar {
@@ -222,13 +248,13 @@ export default {
   margin-left: 1rem;
   height: 100vh;
   display: flex;
-  // background: orange;
 }
 
 .discourse__period {
   width: 25%;
   height: 100vh;
-  border-right: 1px solid blue;
+  border-right: 1px solid #333;
+  overflow-y: hidden;
 }
 
 h2 {
@@ -237,10 +263,11 @@ h2 {
   font-family: 'DIN-regular';
   top: 48%;
   left: 50%;
-  opacity: 0;;
+  opacity: 0;
   transform: translate(-50%, -48%);
   width: 200px;
   text-align: center;
   pointer-events: none;
+  margin-top: -1rem;
 }
 </style>

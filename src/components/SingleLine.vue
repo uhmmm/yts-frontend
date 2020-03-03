@@ -135,17 +135,20 @@ export default {
       }
     },
     showNetwork(author) {
+
       var payload = {
-        unfold: true,
-        author: author,
         elemUuid: this.elemUuid,
         elem: this.$refs.containerAuthor
       }
 
+      console.log('_____payload');
+      console.log(payload.elem);
+      this.network.active = true; // ONDERZOEKEN OF DIT WEG KAN
+
       this.$store.dispatch('openNetwork', payload);
-      // this.network.active = true; // ONDERZOEKEN OF DIT WEG KAN
-      this.$emit('authorClicked') 
+      this.$emit('authorClicked', payload.elem); 
     },
+
     showContext(id) {
       var elemPositions = this.$refs.singleLine.getBoundingClientRect();
 

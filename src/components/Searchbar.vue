@@ -26,7 +26,7 @@
       </div>
 
       <div class="searchbar__community">
-        <span class="topnav" @click="animatePianoKeys()">Settings</span>
+        <span class="topnav" @click="openWindow()">Settings</span>
       </div>
 
     </div>
@@ -67,7 +67,7 @@
             <ul>
               <li class="bullet--inactive" v-bind:class="{ 'bullet': view == 'list' }" @click="fillSort('visType', 'list')">List</li>
               <li class="bullet--inactive" v-bind:class="{ 'bullet': view == 'listnetwork' }" @click="fillSort('visType', 'listnetwork')">List and network</li>
-              <li class="bullet--inactive" v-bind:class="{ 'bullet': view == 'discourse' }" @click="fillSort('visType', 'discourse')">Discourse</li>
+              <li class="bullet--inactive" v-bind:class="{ 'bullet': view == 'discourse' }" @click="fillSort('visType', 'discourse'); closeWindow()">Discourse</li>
             </ul>
           </div>
         </div>         
